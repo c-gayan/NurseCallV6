@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-nursecallv6-dev-175253-authRole",
+      "UnauthRoleArn": "arn:aws:iam::902959538047:role/amplify-nursecallv6-dev-175253-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::902959538047:role/amplify-nursecallv6-dev-175253-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-nursecallv6-dev-175253-deployment",
+      "UnauthRoleName": "amplify-nursecallv6-dev-175253-unauthRole",
+      "StackName": "amplify-nursecallv6-dev-175253",
+      "StackId": "arn:aws:cloudformation:us-west-2:902959538047:stack/amplify-nursecallv6-dev-175253/9c605ee0-c55b-11ec-a9a6-02d2891f9bb7",
+      "AmplifyAppId": "d1kf7f76n4qwiq"
+    },
+    "categories": {
+      "auth": {
+        "nursecallv6789ee2f0": {}
+      },
+      "function": {
+        "ncv6iotjs": {
+          "deploymentBucketName": "amplify-nursecallv6-dev-175253-deployment",
+          "s3Key": "amplify-builds/ncv6iotjs-614736644a715859612f-build.zip"
+        }
+      }
+    }
+  }
+}

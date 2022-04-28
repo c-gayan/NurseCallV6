@@ -1,0 +1,12 @@
+type Call @model @auth(rules: [{allow: public}]) { 
+  id: ID! 
+  version: String! @index(name:"callsByUpdate", queryField:"callsByUpdate", sortKeyFields:["updatedAt"])
+  date: AWSDate 
+  time: AWSTime 
+  bed: Int 
+  room: Int 
+  calltype: String 
+  answered: Boolean 
+  nurse: String
+  updatedAt: String
+}
