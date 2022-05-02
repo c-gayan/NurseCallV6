@@ -16,6 +16,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FlatList, StyleSheet } from 'react-native'
 import React, { useState, useEffect } from 'react';
 import Position from 'react-native/Libraries/Components/Touchable/Position';
+import AddForm from './AddForm';
 
 
 
@@ -23,12 +24,7 @@ const PatientList = () => {
     const [patients, setPatients] = useState([]);
     const [showForm, setShowForm] = useState(false);
 
-    const [name, setname] = useState();
-    const [age, setAge] = useState();
-    const [blood, setBlood] = useState();
-    const [condition, setCondition] = useState();
-    const [symptoms, setSymptoms] = useState();
-    const [bed, setBed] = useState();
+   
 
 
     useEffect(() => {
@@ -68,31 +64,18 @@ const PatientList = () => {
     }
 
     function toggleForm() {
-        console.log("t");
         setShowForm(!showForm)
     }
 
-    function onChangeNumber(){
-        console.log(name);
-    }
 
-    const AddForm = () => {
-        return (
-            <VStack>
-                <TextInput label="Label" variant="standard" value={name} onChangeText={(e) => setname(e)}/>
-            </VStack>
-
-        );
-    }
-
-
+    
     return (
 
         showForm ?
 
             <>
                 <AddForm />
-                <Button onPress={toggleForm} title='SHOW' />
+                
             </>
             :
             <>

@@ -23,6 +23,7 @@ import React, { useState, useEffect } from 'react';
 const CallList = () => {
 
     const [calls, setCalls] = useState([]);
+    const [doneCalls, setDoneCalls] = useState([]);
     const [nurseName, setNurseName] = useState("");
     const [refreshing, setRefreshing] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
@@ -31,9 +32,12 @@ const CallList = () => {
     useEffect(() => {
         getNurseName();
         fetchLog();
+        fetchDoneLog();
+
         const subscription = API.graphql(graphqlOperation(onUpdateCall)).subscribe({
             next: () => {
                 fetchLog();
+                fetchDoneLog();
                 console.log("Update detected");
             }
         });
@@ -46,6 +50,7 @@ const CallList = () => {
         const subscription = API.graphql(graphqlOperation(onCreateCall)).subscribe({
             next: () => {
                 fetchLog();
+                fetchDoneLog();
                 console.log("New record detected");
             }
         });
@@ -60,10 +65,26 @@ const CallList = () => {
                 version: 'v1',
                 sortField: "updatedAt",
                 sortDirection: "DESC"
-                
+
             }));
             setCalls(apiData.data.callsByUpdate.items);
             // console.log(calls);
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    async function fetchDoneLog() {
+        try {
+            const apiData = await API.graphql(graphqlOperation(callsByUpdate, {
+                version: 'v2',
+                sortField: "updatedAt",
+                sortDirection: "DESC"
+
+            }));
+            setDoneCalls(apiData.data.callsByUpdate.items);
+            // console.log(doneCalls);
         } catch (error) {
             console.log(error);
         }
@@ -76,10 +97,10 @@ const CallList = () => {
     }
     async function acceptCall(_id) {
         getNurseName();
-        console.log('answered by ',nurseName);
+        console.log('answered by ', nurseName);
         try {
-            const apiData = await API.graphql(graphqlOperation(updateCall, {input: { id: _id, nurse: nurseName, answered:true }}));
-            console.log(apiData);
+            const apiData = await API.graphql(graphqlOperation(updateCall, { input: { id: _id, nurse: nurseName, answered: true, version: 'v2' } }));
+            // console.log(apiData);
         } catch (error) {
             console.log(error);
         }
@@ -167,7 +188,7 @@ const CallList = () => {
     }
 
     return (
-        calls.length === 0 ?
+        calls.length + doneCalls.length == 0 ?
             <Stack fill center >
                 <ActivityIndicator size="large" color="#00ff00" />
             </Stack>
@@ -238,14 +259,16 @@ const CallList = () => {
                             </Box>
                         </Flex>
                     :
-                    <FlatList
-                        data={calls}
-                        keyExtractor={({ id }) => id}
-                        renderItem={renderItem}
-                        refreshing={refreshing}
-                        onRefresh={() => fetchLog()}
+                    <>
+                        <FlatList
+                            data={[...calls, ...doneCalls]}
+                            keyExtractor={({ id }) => id}
+                            renderItem={renderItem}
+                            refreshing={refreshing}
+                            onRefresh={() => fetchLog()}
 
-                    />
+                        />
+                    </>
 
                 }
 
