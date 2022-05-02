@@ -75,7 +75,7 @@ const PatientList = () => {
 
             <>
                 <AddForm />
-                
+                <Button onPress={toggleForm} title='Back' />
             </>
             :
             <>

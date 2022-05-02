@@ -52,8 +52,8 @@ function PatientScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <PatientList />
-      <Text >hello</Text>
-      <Button title="Sign Out" onPress={signOut} />
+      {/* <Text >hello</Text>
+      <Button title="Sign Out" onPress={signOut} /> */}
     </View>
   );
 }
