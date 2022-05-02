@@ -1,6 +1,7 @@
 import { API, graphqlOperation, Auth } from 'aws-amplify';
 import { callsByUpdate, listCalls } from '../graphql/queries';
 import { onUpdateCall, onCreateCall } from '../graphql/subscriptions';
+import { updateCall } from '../graphql/mutations';
 import {
     Pressable, View, Text, ListItem, Box, Surface, Button,
     ActivityIndicator, Flex, Stack, HStack, Spacer, VStack,
@@ -22,7 +23,7 @@ import React, { useState, useEffect } from 'react';
 const CallList = () => {
 
     const [calls, setCalls] = useState([]);
-    const [nurseName, setNurseName] = useState();
+    const [nurseName, setNurseName] = useState("");
     const [refreshing, setRefreshing] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const [detailedModel, setDetailedModel] = useState(null);
@@ -59,6 +60,7 @@ const CallList = () => {
                 version: 'v1',
                 sortField: "updatedAt",
                 sortDirection: "DESC"
+                
             }));
             setCalls(apiData.data.callsByUpdate.items);
             // console.log(calls);
@@ -71,6 +73,19 @@ const CallList = () => {
     async function getNurseName() {
         const user = await Auth.currentAuthenticatedUser();
         setNurseName(user.attributes.name);
+    }
+    async function acceptCall(_id) {
+        getNurseName();
+        console.log('answered by ',nurseName);
+        try {
+            const apiData = await API.graphql(graphqlOperation(updateCall, {input: { id: _id, nurse: nurseName, answered:true }}));
+            console.log(apiData);
+        } catch (error) {
+            console.log(error);
+        }
+        setShowDetails(false)
+
+
     }
 
     function gotoDetailed(item) {
@@ -217,7 +232,7 @@ const CallList = () => {
                                     </ScrollView>
                                     <HStack justify='evenly'>
                                         <Button title='Go Back' onPress={() => { setShowDetails(false) }} />
-                                        <Button title='Go Back' onPress={() => { setShowDetails(false) }} />
+                                        <Button disabled={detailedModel.answered} title='Accept Call' onPress={() => acceptCall(detailedModel.id)} />
                                     </HStack>
                                 </VStack>
                             </Box>

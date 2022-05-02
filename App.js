@@ -53,7 +53,7 @@ function PatientScreen() {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <PatientList />
       <Text >hello</Text>
-      {/* <Button title="Sign Out" onPress={signOut} /> */}
+      <Button title="Sign Out" onPress={signOut} />
     </View>
   );
 }
@@ -84,9 +84,9 @@ const App = () => {
           tabBarInactiveTintColor: 'gray',
         })}
       >
-       
-        <Tab.Screen name="Patient" component={PatientScreen} />
         <Tab.Screen name="Calls" component={CallsScreen} />
+        <Tab.Screen name="Patient" component={PatientScreen} />
+
       </Tab.Navigator>
     </NavigationContainer>
 
