@@ -12,6 +12,7 @@ export const onCreateCall = /* GraphQL */ `
       room
       calltype
       answered
+      reason
       nurse
       updatedAt
       createdAt
@@ -29,6 +30,7 @@ export const onUpdateCall = /* GraphQL */ `
       room
       calltype
       answered
+      reason
       nurse
       updatedAt
       createdAt
@@ -46,9 +48,55 @@ export const onDeleteCall = /* GraphQL */ `
       room
       calltype
       answered
+      reason
       nurse
       updatedAt
       createdAt
+    }
+  }
+`;
+export const onCreatePatient = /* GraphQL */ `
+  subscription OnCreatePatient {
+    onCreatePatient {
+      id
+      name
+      age
+      blood
+      condition
+      symptoms
+      bed
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdatePatient = /* GraphQL */ `
+  subscription OnUpdatePatient {
+    onUpdatePatient {
+      id
+      name
+      age
+      blood
+      condition
+      symptoms
+      bed
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeletePatient = /* GraphQL */ `
+  subscription OnDeletePatient {
+    onDeletePatient {
+      id
+      name
+      age
+      blood
+      condition
+      symptoms
+      bed
+      createdAt
+      updatedAt
     }
   }
 `;

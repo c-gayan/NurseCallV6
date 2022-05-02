@@ -6,7 +6,11 @@
     "gqlSchemaPath": "C:\\Users\\cgaya\\Documents\\project\\NurseCallV6\\amplify\\backend\\api\\nursecallv6\\schema.graphql",
     "defaultAuthType": {
       "mode": "API_KEY",
-      "expirationTime": 7
-    }
+      "expirationTime": 365,
+      "apiKeyExpirationDate": "2023-04-30T07:34:23.553Z",
+      "keyDescription": ""
+    },
+    "conflictResolution": {},
+    "additionalAuthTypes": []
   }
 }

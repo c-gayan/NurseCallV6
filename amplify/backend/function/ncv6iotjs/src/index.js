@@ -21,9 +21,9 @@ async function callGraphql(data) {
 
     var config = {
         method: 'post',
-        url: ' http://192.168.43.127:20002/graphql',
+        url: 'https://kg6h4jrzrreehmrq633j2nrdsa.appsync-api.us-west-2.amazonaws.com/graphql',
         headers: {
-            'x-api-key': 'da2-fakeApiId123456',
+            'x-api-key': 'da2-fic5vcbxf5dxtlp2pa3a47j6im',
             'Content-Type': 'application/json'
         },
         data: data

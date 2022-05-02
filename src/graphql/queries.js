@@ -12,6 +12,7 @@ export const getCall = /* GraphQL */ `
       room
       calltype
       answered
+      reason
       nurse
       updatedAt
       createdAt
@@ -34,9 +35,47 @@ export const listCalls = /* GraphQL */ `
         room
         calltype
         answered
+        reason
         nurse
         updatedAt
         createdAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getPatient = /* GraphQL */ `
+  query GetPatient($id: ID!) {
+    getPatient(id: $id) {
+      id
+      name
+      age
+      blood
+      condition
+      symptoms
+      bed
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listPatients = /* GraphQL */ `
+  query ListPatients(
+    $filter: ModelPatientFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listPatients(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        age
+        blood
+        condition
+        symptoms
+        bed
+        createdAt
+        updatedAt
       }
       nextToken
     }
@@ -68,6 +107,7 @@ export const callsByUpdate = /* GraphQL */ `
         room
         calltype
         answered
+        reason
         nurse
         updatedAt
         createdAt

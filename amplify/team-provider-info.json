@@ -13,12 +13,12 @@
     },
     "categories": {
       "auth": {
-        "nursecallv6789ee2f0": {}
+        "NurseCallV6": {}
       },
       "function": {
         "ncv6iotjs": {
           "deploymentBucketName": "amplify-nursecallv6-dev-175253-deployment",
-          "s3Key": "amplify-builds/ncv6iotjs-614736644a715859612f-build.zip"
+          "s3Key": "amplify-builds/ncv6iotjs-6134466532624b314553-build.zip"
         }
       }
     }

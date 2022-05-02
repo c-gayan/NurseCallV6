@@ -1,13 +1,21 @@
-import { withAuthenticator } from 'aws-amplify-react-native/dist/Auth';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+
+import { withAuthenticator } from 'aws-amplify-react-native/dist/Auth';
 import { Amplify, Auth } from 'aws-amplify';
 import awsconfig from './src/aws-exports';
-import { Box, Button } from '@react-native-material/core';
+
 import CallList from './src/components/CallList';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CallDelete from './src/components/CallDelete';
+
+
+import { Box, Button, Dialog } from '@react-native-material/core';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import PatientList from './src/components/PatientList';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,36 +37,93 @@ async function signOut() {
   }
 }
 
-const HomeScreen = ({ navigation }) => {
-  return (
-    <>
-      <Box h={5} />
-      <CallList navigation={navigation} />
-      <CallDelete />
-    </>
 
+function CallsScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch' }}>
+      <CallList />
+      {/* <CallDelete /> */}
+
+    </View>
   );
-};
-const ProfileScreen = ({ navigation, route }) => {
-  return <Text>This is {route.params.name}'s profile</Text>;
-};
+}
+
+function PatientScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <PatientList />
+      <Text >hello</Text>
+      {/* <Button title="Sign Out" onPress={signOut} /> */}
+    </View>
+  );
+}
+
+const Tab = createBottomTabNavigator();
 
 const App = () => {
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Nurse Call System' }}
-        />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-      </Stack.Navigator>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Calls') {
+              iconName = focused
+                ? 'ios-information-circle'
+                : 'ios-information-circle-outline';
+            } else if (route.name === 'Patient') {
+              iconName = focused ? 'ios-person' : 'ios-person-outline';
+            }
+
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'deepskyblue',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+       
+        <Tab.Screen name="Patient" component={PatientScreen} />
+        <Tab.Screen name="Calls" component={CallsScreen} />
+      </Tab.Navigator>
     </NavigationContainer>
-    // <Button title="Sign Out" onPress={signOut} />
-    //   <StatusBar style="auto" />
 
   );
 }
 
-export default withAuthenticator(App);
+const signUpConfig = {
+  header: 'My Customized Sign Up',
+  hideAllDefaults: true,
+  defaultCountryCode: '1',
+  signUpFields: [
+    {
+      label: 'Full name',
+      key: 'name',
+      required: true,
+      displayOrder: 1,
+      type: 'string'
+    },
+    {
+      label: 'Password',
+      key: 'password',
+      required: true,
+      displayOrder: 3,
+      type: 'password'
+    },
+    {
+      label: 'Email',
+      key: 'email',
+      required: true,
+      displayOrder: 4,
+      type: 'string'
+    }
+  ]
+};
+const usernameAttributes = 'Email';
+
+export default withAuthenticator(App, {
+  signUpConfig,
+  usernameAttributes
+});
