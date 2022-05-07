@@ -64,7 +64,7 @@ export const onCreatePatient = /* GraphQL */ `
       blood
       condition
       symptoms
-      bed
+      room
       createdAt
       updatedAt
     }
@@ -79,7 +79,7 @@ export const onUpdatePatient = /* GraphQL */ `
       blood
       condition
       symptoms
-      bed
+      room
       createdAt
       updatedAt
     }
@@ -94,7 +94,7 @@ export const onDeletePatient = /* GraphQL */ `
       blood
       condition
       symptoms
-      bed
+      room
       createdAt
       updatedAt
     }

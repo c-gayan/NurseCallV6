@@ -1,14 +1,15 @@
 import { API, graphqlOperation, Auth } from 'aws-amplify';
 import { onCreatePatient, onUpdatePatient } from '../graphql/subscriptions';
 import { listPatients } from '../graphql/queries';
+import { deletePatient } from '../graphql/mutations';
 import {
     Pressable, View, Text, ListItem, Box, Surface, Button,
     ActivityIndicator, Flex, Stack, HStack, Spacer, VStack,
-    Chip, Dialog,TextInput,
+    Chip, Dialog, TextInput,
     DialogHeader,
     DialogContent,
     DialogActions,
-    Divider, FAB
+    Divider, FAB, IconButton
 }
     from "@react-native-material/core";
 
@@ -24,7 +25,9 @@ const PatientList = () => {
     const [patients, setPatients] = useState([]);
     const [showForm, setShowForm] = useState(false);
 
-   
+    const [refreshing, setRefreshing] = useState(false);
+
+
 
 
     useEffect(() => {
@@ -67,21 +70,58 @@ const PatientList = () => {
         setShowForm(!showForm)
     }
 
+    const callDeletfromid = async (_id) => {
+        console.log(`delete record in ${_id}`);
+        console.log(await API.graphql(graphqlOperation(deletePatient, { input: { id: _id } })));
+        return null;
+    }
 
-    
+    const renderItem = ({ item }) => {
+        return (
+            <>
+
+                <Box  >
+                    <HStack>
+                        <Box w={30} />
+                        <Text variant='h4'>{item.id}</Text>
+                        <Box w={20} />
+
+                        <Text variant='h4'>{item.name}</Text>
+                        <Spacer />
+                        <IconButton icon={props => <MaterialCommunityIcons name="delete" {...props} />}
+                            onLongPress={() => {
+                                callDeletfromid(item.id);
+                            }}
+                        />
+                    </HStack>
+                </Box>
+
+                <Box h={5} />
+                <Divider />
+                <Box h={5} />
+            </>
+        );
+    }
+
     return (
 
         showForm ?
 
             <>
                 <AddForm />
+                <Box h={30} />
                 <Button onPress={toggleForm} title='Back' />
             </>
             :
             <>
-                <Text variant='h1'>
-                    list here
-                </Text>
+                <FlatList
+                    data={patients}
+                    keyExtractor={({ id }) => id}
+                    renderItem={renderItem}
+                    refreshing={refreshing}
+                    onRefresh={() => fetchLog()}
+                    style={{ alignSelf: 'stretch' }}
+                />
                 <Button title="Add Patient" variant="contained" color="primary"
                     style={{ position: 'absolute', bottom: 20, right: 20, width: 140, height: 40 }}
                     onPress={toggleForm}

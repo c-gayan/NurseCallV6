@@ -1,5 +1,5 @@
 import { API, graphqlOperation, Auth } from 'aws-amplify';
-import { callsByUpdate, listCalls } from '../graphql/queries';
+import { callsByUpdate, getPatient, listCalls } from '../graphql/queries';
 import { onUpdateCall, onCreateCall } from '../graphql/subscriptions';
 import { updateCall } from '../graphql/mutations';
 import {
@@ -17,8 +17,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { FlatList, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react';
+import CallDelete from './CallDelete';
 
-
+import { Audio } from 'expo-av';
 
 const CallList = () => {
 
@@ -29,6 +30,51 @@ const CallList = () => {
     const [showDetails, setShowDetails] = useState(false);
     const [detailedModel, setDetailedModel] = useState(null);
 
+    const [sound, setSound] = React.useState();
+
+    async function playSound() {
+        console.log('Loading Sound');
+        const { sound } = await Audio.Sound.createAsync(
+            require('../audio/alarm.wav')
+        );
+        setSound(sound);
+
+        console.log('Playing Sound');
+        await sound.playAsync();
+    }
+    useEffect(() => {
+        return sound
+            ? () => {
+                console.log('Unloading Sound');
+                sound.unloadAsync();
+            }
+            : undefined;
+    }, [sound]);
+
+
+    var initialPatient = {
+        "age": 0,
+        "blood": "No Data",
+        "condition": "No Data",
+        "id": "No Data",
+        "name": "No Data",
+        "room": 0,
+        "symptoms": "No Data",
+    }
+    var loadingPatient = {
+        "age": 0,
+        "blood": "Loading ...",
+        "condition": "Loading ...",
+        "id": "Loading ...",
+        "name": "Loading ...",
+        "room": 0,
+        "symptoms": "Loading ...",
+    }
+
+
+
+    const [patient, setPatient] = useState(initialPatient);
+
     useEffect(() => {
         getNurseName();
         fetchLog();
@@ -36,6 +82,7 @@ const CallList = () => {
 
         const subscription = API.graphql(graphqlOperation(onUpdateCall)).subscribe({
             next: () => {
+                playSound();
                 fetchLog();
                 fetchDoneLog();
                 console.log("Update detected");
@@ -49,6 +96,7 @@ const CallList = () => {
     useEffect(() => {
         const subscription = API.graphql(graphqlOperation(onCreateCall)).subscribe({
             next: () => {
+                playSound();
                 fetchLog();
                 fetchDoneLog();
                 console.log("New record detected");
@@ -109,14 +157,47 @@ const CallList = () => {
 
     }
 
-    function gotoDetailed(item) {
+    async function gotoDetailed(item) {
+
         console.log("window for ", item.id);
+        setPatient(loadingPatient)
         setDetailedModel(item)
         setShowDetails(true)
+        try {
+            const apiData = await API.graphql(graphqlOperation(getPatient, {
+                id: item.bed
+
+            }));
+
+            apiData.data.getPatient != null ? setPatient(apiData.data.getPatient) : setPatient(initialPatient)
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+
         return null
     }
 
+    function addLeadingZeros(num, totalLength) {
+        return String(num).padStart(totalLength, '0');
+    }
+
     const renderItem = ({ item }) => {
+        let c_date = new Date();
+        let u_date = new Date(item.updatedAt);
+        let diff = Math.abs(c_date - u_date);
+        const hours = parseInt(diff / (1000 * 60 * 60) % 60);
+        const minutes = parseInt(diff / (1000 * 60) % 60);
+        const seconds = parseInt(diff / (1000) % 60);
+
+        let card_color = item.calltype === "Help" ? "dodgerblue" : "tomato"
+
+        if (item.answered) {
+            card_color = "limegreen"
+        }
+
         return (
 
             <Pressable onPress={() => gotoDetailed(item)}>
@@ -126,21 +207,35 @@ const CallList = () => {
                         marginTop: 5,
                         marginBottom: 5,
                         padding: 10,
-                        backgroundColor: item.calltype === "Help" ? "dodgerblue" : "tomato"
+                        backgroundColor: card_color
                     }}
                 >
 
                     <VStack>
                         <HStack pl={10} pr={10}>
-                            <HStack w={180} >
-                                <Text variant='h5' >Room </Text>
-                                <Text variant='h2' color='white'>{item.room}</Text>
-                            </HStack>
+                            {
+                                item.answered ?
+                                    <>
+                                        <VStack w={180} >
+                                            <Text variant='h6' >This call is </Text>
+                                            <Text variant='h4' color='white'>Answered</Text>
+                                        </VStack>
+                                    </>
+                                    :
+                                    <>
+                                        <VStack w={180} >
+                                            <Text variant='h6' >Time passed </Text>
+                                            <Text variant='h4' color='white'>{addLeadingZeros(hours, 2)}:{addLeadingZeros(minutes, 2)}:{addLeadingZeros(seconds, 2)}</Text>
+                                        </VStack>
+                                    </>
+                            }
                             <Spacer />
-                            <HStack w={180}>
-                                <Text variant='h5'>Bed </Text>
-                                <Text variant='h2' color='white'>{item.bed}</Text>
-                            </HStack>
+                            <VStack w={90}>
+                                <Text variant='h6' style={{ alignSelf: 'center' }}>Bed </Text>
+                                <Spacer />
+                                <Text variant='h4' color='white' style={{ alignSelf: 'center' }}>{item.bed}</Text>
+                            </VStack>
+
                         </HStack>
                         <HStack  >
                             <HStack w={180}>
@@ -216,9 +311,9 @@ const CallList = () => {
                                 <Box fill p={5} mb={5} style={{ alignItems: 'center', backgroundColor: detailedModel.calltype === "Help" ? "#5273E2" : "#E25252", borderTopStartRadius: 20, borderTopEndRadius: 20 }}>
                                     {
                                         detailedModel.calltype === "Help" ?
-                                            <Text variant='h6' color='black'>Your assistance require at room <Text variant='h5' color='white'>{detailedModel.room} </Text> bed <Text variant='h5' color='white'>{detailedModel.bed} </Text></Text>
+                                            <Text variant='h6' color='black'>Room <Text variant='h3' color='white'>{patient.room} </Text> bed <Text variant='h3' color='white'>{detailedModel.bed} </Text></Text>
                                             :
-                                            <Text variant='h6' color='black'>Emergency situation in room <Text variant='h5' color='white'>{detailedModel.room} </Text> bed <Text variant='h5' color='white'>{detailedModel.bed} </Text></Text>
+                                            <Text variant='h6' color='black'>Room <Text variant='h3' color='white'>{patient.room} </Text> bed <Text variant='h3' color='white'>{detailedModel.bed} </Text></Text>
                                     }
                                 </Box>
                                 <VStack spacing={4} p={10}>
@@ -226,30 +321,26 @@ const CallList = () => {
                                     <Divider></Divider>
                                     <HStack>
                                         <Text variant='h6' style={{ width: 90 }}>Name</Text>
-                                        <Text variant='h6'>: M.D.chamara gayan</Text>
+                                        <Text variant='h6'>: {patient.name}</Text>
                                     </HStack>
                                     <HStack>
                                         <Text variant='h6' style={{ width: 90 }}>Age</Text>
-                                        <Text variant='h6'>: 25 years</Text>
+                                        <Text variant='h6'>: {patient.age} years</Text>
                                     </HStack>
                                     <HStack>
                                         <Text variant='h6' style={{ width: 90 }}>Blood</Text>
-                                        <Text variant='h6'>: B+</Text>
+                                        <Text variant='h6'>: {patient.blood}</Text>
                                     </HStack>
                                     <HStack>
                                         <Text variant='h6' style={{ width: 90 }}>Condition</Text>
-                                        <Text variant='h6'>: Good</Text>
+                                        <Text variant='h6'>: {patient.condition}</Text>
                                     </HStack>
                                     <Box h={5} />
-                                    <Text variant='h6' >Symptoms</Text>
                                     <Divider />
+                                    <Text variant='h6' >Symptoms :</Text>
+
                                     <ScrollView style={{ height: 200 }}>
-                                        <Text variant='h6'>
-                                            fever, cough, tiredness, loss of taste or smell
-                                            Seek immediate medical attention if you have serious symptoms. Always call before visiting your doctor or health facility.
-                                            People with mild symptoms who are otherwise healthy should manage their symptoms at home.
-                                            On average it takes 5–6 days from when someone is infected with the virus for symptoms to show, however it can take up to 14 days.
-                                        </Text>
+                                        <Text variant='h6'> {patient.symptoms}</Text>
                                     </ScrollView>
                                     <HStack justify='evenly'>
                                         <Button title='Go Back' onPress={() => { setShowDetails(false) }} />
@@ -260,6 +351,7 @@ const CallList = () => {
                         </Flex>
                     :
                     <>
+                        <Button onPress={playSound} title={"play"} />
                         <FlatList
                             data={[...calls, ...doneCalls]}
                             keyExtractor={({ id }) => id}
@@ -268,6 +360,7 @@ const CallList = () => {
                             onRefresh={() => fetchLog()}
 
                         />
+                        {/* <CallDelete /> */}
                     </>
 
                 }

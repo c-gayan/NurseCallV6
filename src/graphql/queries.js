@@ -53,7 +53,7 @@ export const getPatient = /* GraphQL */ `
       blood
       condition
       symptoms
-      bed
+      room
       createdAt
       updatedAt
     }
@@ -73,7 +73,7 @@ export const listPatients = /* GraphQL */ `
         blood
         condition
         symptoms
-        bed
+        room
         createdAt
         updatedAt
       }
