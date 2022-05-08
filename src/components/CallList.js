@@ -42,6 +42,7 @@ const CallList = () => {
         console.log('Playing Sound');
         await sound.playAsync();
     }
+
     useEffect(() => {
         return sound
             ? () => {
@@ -72,40 +73,42 @@ const CallList = () => {
     }
 
 
+    async function load() {
+
+        fetchLog();
+        fetchDoneLog();
+    }
 
     const [patient, setPatient] = useState(initialPatient);
 
     useEffect(() => {
         getNurseName();
-        fetchLog();
-        fetchDoneLog();
+        load();
+
 
         const subscription = API.graphql(graphqlOperation(onUpdateCall)).subscribe({
             next: () => {
-                playSound();
-                fetchLog();
-                fetchDoneLog();
                 console.log("Update detected");
+                playSound();
+                load();
             }
         });
         return () => {
             subscription.unsubscribe();
         };
-    }, [calls]);
+    }, [calls, sound]);
 
     useEffect(() => {
         const subscription = API.graphql(graphqlOperation(onCreateCall)).subscribe({
             next: () => {
-                playSound();
-                fetchLog();
-                fetchDoneLog();
+                load();
                 console.log("New record detected");
             }
         });
         return () => {
             subscription.unsubscribe();
         };
-    }, [calls]);
+    }, [calls, sound]);
 
     async function fetchLog() {
         try {

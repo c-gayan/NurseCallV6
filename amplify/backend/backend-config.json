@@ -1,62 +1,70 @@
 {
-  "api": {
-    "nursecallv6": {
-      "service": "AppSync",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "output": {
-        "authConfig": {
-          "defaultAuthentication": {
-            "authenticationType": "API_KEY",
-            "apiKeyConfig": {
-              "apiKeyExpirationDays": 365,
-              "apiKeyExpirationDate": "2023-04-30T07:34:23.553Z",
-              "description": ""
+    "api": {
+        "nursecallv6": {
+            "service": "AppSync",
+            "providerPlugin": "awscloudformation",
+            "dependsOn": [],
+            "output": {
+                "authConfig": {
+                    "defaultAuthentication": {
+                        "authenticationType": "API_KEY",
+                        "apiKeyConfig": {
+                            "apiKeyExpirationDays": 365,
+                            "apiKeyExpirationDate": "2023-04-30T07:34:23.553Z",
+                            "description": ""
+                        }
+                    },
+                    "additionalAuthenticationProviders": []
+                }
             }
-          },
-          "additionalAuthenticationProviders": []
         }
-      }
+    },
+    "auth": {
+        "NurseCallV6": {
+            "service": "Cognito",
+            "providerPlugin": "awscloudformation",
+            "dependsOn": [],
+            "customAuth": false,
+            "frontendAuthConfig": {
+                "socialProviders": [],
+                "usernameAttributes": [
+                    "EMAIL"
+                ],
+                "signupAttributes": [
+                    "NAME"
+                ],
+                "passwordProtectionSettings": {
+                    "passwordPolicyMinLength": 8,
+                    "passwordPolicyCharacters": [
+                        "REQUIRES_LOWERCASE",
+                        "REQUIRES_NUMBERS",
+                        "REQUIRES_SYMBOLS",
+                        "REQUIRES_UPPERCASE"
+                    ]
+                },
+                "mfaConfiguration": "OFF",
+                "mfaTypes": [
+                    "SMS"
+                ],
+                "verificationMechanisms": [
+                    "EMAIL"
+                ]
+            }
+        }
+    },
+    "function": {
+        "ncv6iotjs": {
+            "build": true,
+            "providerPlugin": "awscloudformation",
+            "service": "Lambda"
+        }
+    },
+    "notifications": {
+        "NurseCallV6yW6xZ": {
+            "service": "Pinpoint",
+            "channels": [
+                "FCM"
+            ]
+        }
     }
-  },
-  "auth": {
-    "NurseCallV6": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "customAuth": false,
-      "frontendAuthConfig": {
-        "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
-        "signupAttributes": [
-          "NAME"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": [
-            "REQUIRES_LOWERCASE",
-            "REQUIRES_NUMBERS",
-            "REQUIRES_SYMBOLS",
-            "REQUIRES_UPPERCASE"
-          ]
-        },
-        "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
-      }
-    }
-  },
-  "function": {
-    "ncv6iotjs": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  }
 }
