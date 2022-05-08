@@ -17,7 +17,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PatientList from './src/components/PatientList';
 
+
 const Stack = createNativeStackNavigator();
+
+// import messaging from '@react-native-firebase/messaging';
 
 
 Amplify.configure(awsconfig);
@@ -27,6 +30,8 @@ Amplify.configure({
     disabled: true,
   },
 });
+
+
 
 
 async function signOut() {
