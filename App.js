@@ -17,6 +17,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PatientList from './src/components/PatientList';
 
+
 const Stack = createNativeStackNavigator();
 
 
