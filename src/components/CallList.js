@@ -19,7 +19,9 @@ import { FlatList, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react';
 import CallDelete from './CallDelete';
 
-import { Audio } from 'expo-av';
+
+import { Notifications } from 'react-native-notifications';
+
 
 const CallList = () => {
 
@@ -33,14 +35,8 @@ const CallList = () => {
     const [sound, setSound] = React.useState();
 
     async function playSound() {
-        console.log('Loading Sound');
-        const { sound } = await Audio.Sound.createAsync(
-            require('../audio/alarm.wav')
-        );
-        setSound(sound);
 
-        console.log('Playing Sound');
-        await sound.playAsync();
+       
     }
     useEffect(() => {
         return sound
