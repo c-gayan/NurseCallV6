@@ -20,8 +20,6 @@ import React, { useState, useEffect } from 'react';
 import CallDelete from './CallDelete';
 
 
-import { Notifications } from 'react-native-notifications';
-
 
 const CallList = () => {
 
@@ -38,6 +36,7 @@ const CallList = () => {
 
        
     }
+
     useEffect(() => {
         return sound
             ? () => {
@@ -57,6 +56,7 @@ const CallList = () => {
         "room": 0,
         "symptoms": "No Data",
     }
+
     var loadingPatient = {
         "age": 0,
         "blood": "Loading ...",
@@ -347,7 +347,7 @@ const CallList = () => {
                         </Flex>
                     :
                     <>
-                        <Button onPress={playSound} title={"play"} />
+                        {/* <Button onPress={playSound} title={"play"} /> */}
                         <FlatList
                             data={[...calls, ...doneCalls]}
                             keyExtractor={({ id }) => id}

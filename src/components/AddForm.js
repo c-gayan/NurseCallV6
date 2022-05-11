@@ -40,6 +40,7 @@ const AddForm = () => {
                     }
                 }));
                 console.log(apiData);
+                
             } catch (error) {
                 Alert.alert(
                     "Bed is already Occupied",
